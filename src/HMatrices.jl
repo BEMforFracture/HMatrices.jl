@@ -12,6 +12,7 @@ using RecipesBase
 using Distributed
 using Base.Threads
 using SparseArrays
+using TimerOutputs
 
 const AdjOrMat = Union{Matrix, Adjoint{<:Any, <:Matrix}}
 
