@@ -129,7 +129,9 @@ function _aca_partial(K, irange, jrange, atol, rmax, rtol, istart, buffer_ = not
 			#     row[j] = row[j] - B[k][j]*adjoint(A[k][i])
 			# end
 		end
-		j = _aca_partial_pivot(b, J)
+		j = @timeit HMATRIX_TIMER "pivot selection" begin
+			_aca_partial_pivot(b, J)
+		end
 		δ = b[j]
 		if svdvals(δ)[end] == 0
 			@debug "zero pivot found during partial aca"
@@ -169,7 +171,9 @@ function _aca_partial(K, irange, jrange, atol, rmax, rtol, istart, buffer_ = not
 			er = norm(a) * norm(b)
 			# estimate the norm by || K || ≈ || R_k ||
 			est_norm = _update_frob_norm(est_norm, A, B)
-			i = _aca_partial_pivot(a, I)
+			i = @timeit HMATRIX_TIMER "pivot selection" begin
+				_aca_partial_pivot(a, I)
+			end
 			@debug r, er, m, n
 		end
 	end
