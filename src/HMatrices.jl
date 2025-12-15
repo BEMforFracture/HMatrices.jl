@@ -14,6 +14,9 @@ using Base.Threads
 using SparseArrays
 using TimerOutputs
 
+# Global timer that can be accessed from outside the module
+const HMATRIX_TIMER = TimerOutput()
+
 const AdjOrMat = Union{Matrix, Adjoint{<:Any, <:Matrix}}
 
 """
@@ -88,6 +91,8 @@ export ClusterTree,
 	TSVD,
 	# functions
 	compression_ratio,
-	assemble_hmatrix
+	assemble_hmatrix,
+	# timer
+	HMATRIX_TIMER
 
 end

@@ -217,7 +217,7 @@ function _aca_partial_pivot(v, J)
 	val = -Inf
 	for n in 1:length(J)
 		x = v[n]
-		σ = @timeit Main.GLOBAL_TIMER "svdvals" svdvals(x)[end]
+		σ = @timeit HMATRIX_TIMER "svdvals" svdvals(x)[end]
 		if σ > val && J[n]
 			idx = n
 			val = σ
