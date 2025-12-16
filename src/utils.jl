@@ -175,5 +175,5 @@ solution for the roots of the characteristic polynomial.
 """
 function min_svd_val_optim(A::AbstractMatrix{T}) where {T}
 	@assert size(A, 1) == size(A, 2) == 3 "Input matrix must be 3x3"
-	return sqrt(eigmin(A * A'))
+	return sqrt(max(zero(T), eigmin(A * A')))
 end
