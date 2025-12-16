@@ -43,16 +43,18 @@ function (paca::PartialACA)(K, rowtree::ClusterTree, coltree::ClusterTree, bufs 
 	istart = _aca_partial_initial_pivot(rowtree)
 	irange = index_range(rowtree)
 	jrange = index_range(coltree)
-	return _aca_partial(
-		K,
-		irange,
-		jrange,
-		paca.atol,
-		paca.rank,
-		paca.rtol,
-		istart - irange.start + 1,
-		bufs,
-	)
+	return @timeit HMATRIX_TIMER "PACA" begin
+		_aca_partial(
+			K,
+			irange,
+			jrange,
+			paca.atol,
+			paca.rank,
+			paca.rtol,
+			istart - irange.start + 1,
+			bufs,
+		)
+	end
 end
 
 function (paca::PartialACA)(K, irange::AbstractRange, jrange::AbstractRange, bufs = nothing)
@@ -221,13 +223,25 @@ function _aca_partial_pivot(v, J)
 	val = -Inf
 	for n in 1:length(J)
 		x = v[n]
-		σ = @timeit HMATRIX_TIMER "svdvals" svdvals(x)[end]
+		σ = min_svd_val(x)
 		if σ > val && J[n]
 			idx = n
 			val = σ
 		end
 	end
 	return idx
+end
+
+min_svd_val(x::Number) = abs(x)
+min_svd_val(x) = svdvals(x)[end]
+function min_svd_val(A::AbstractMatrix)
+	n, m = size(A)
+	@assert n == m "matrix must be square to compute min_svd_val"
+	return if n == 2 | n == 3
+		min_svd_val_optim(A)
+	else
+		svdvals(A)[end]
+	end
 end
 
 function _aca_partial_initial_pivot(rowtree)
